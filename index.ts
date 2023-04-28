@@ -1,5 +1,5 @@
 
-import { mkdir, openSync, readFile, readFileSync, write } from 'fs'
+import { close, mkdir, openSync, readFile, readFileSync, write } from 'fs'
 
 type JSONValue =
     | string
@@ -51,6 +51,7 @@ function json_to_csv({ json, destination = '', file_name = 'test' }: { json: JSO
                 });
             }
         })
+        // close(f)
     }
     catch (err) {
         if (err.errno == -4058) {
