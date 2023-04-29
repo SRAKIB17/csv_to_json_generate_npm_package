@@ -30,7 +30,6 @@ const csv_file_to_json_generate = ({ csv_path, json_file_name = 'test', destinat
                     })
                     arr.push(obj)
                 }
-                console.log(arr)
             }
             const path = (Boolean(destination) ? (destination + '/') : "") + json_file_name + ".json"
             const jsonFile = openSync(path, 'w+');
@@ -63,7 +62,7 @@ const csv_to_json_generate_remotely = ({ url, json_file_name = 'test', destinati
 
             response.on('data', function (chunk) {
                 const convertStr = chunk.toString()?.split('\n')
-                console.log(convertStr)
+
                 const column = convertStr?.[0]?.split(',')
                 const arr = Array()
 
@@ -103,7 +102,6 @@ const csv_to_json_generate_remotely = ({ url, json_file_name = 'test', destinati
 
             response.on('data', function (chunk) {
                 const convertStr = chunk.toString()?.split('\n')
-                console.log(convertStr)
                 const column = convertStr?.[0]?.split(',')
                 const arr = Array()
 
