@@ -21,6 +21,7 @@ npm i csv_to_json_generate_file_or_remote
 "Y",534534,1835434,true
 "X",534534,5435355,true
 `
+import {csv_file_to_json_generate} from 'csv_to_json_generate_file_or_remote'
 
 csv_file_to_json_generate({
     csv_path: 'test/test.csv',
@@ -38,7 +39,7 @@ csv_file_to_json_generate({
 | json_file_name | file name of json file. Default file name `test`                           |
 
 ``` javascript
-
+import {csv_to_json_generate_remotely} from 'csv_to_json_generate_file_or_remote'
 
 csv_to_json_generate_remotely({
     url: 'https://www.w3schools.com/python/pandas/data.csv.txt'
