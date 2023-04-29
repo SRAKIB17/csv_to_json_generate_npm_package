@@ -1,4 +1,4 @@
-# Version: 1.1.0
+# Version: 1.1.1
 
 ```
 npm i csv_to_json_generate_file_or_remote
