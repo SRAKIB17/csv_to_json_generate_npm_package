@@ -1,48 +1,50 @@
 # Version: 1.1.0
 
+```
+npm i csv_to_json_generate_file_or_remote
+```
+
 ## Configure
 
-| parameter   | Description                                                              |
-| ----------- | ------------------------------------------------------------------------ |
-| json        | pass json array                                                          |
-| destination | Default `root folder`. You can pass destination like `csv/test` or `csv` |
-| file_name   | file name of csv file. Default file name `test`                          |
+1. csv file to json:
 
-## Return data
+| parameter      | Description                                                                |
+| -------------- | -------------------------------------------------------------------------- |
+| csv_path       | pass csv file path                                                         |
+| destination    | Default `root folder`. You can pass destination like `json/test` or `json` |
+| json_file_name | file name of json file. Default file name `test`                           |
 
-Note:  It is work with node filesystem. Work with backend site
-
-| success | Description                                                                                                                      |
-| ------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| false   | `{success: false, message: 'no such file or directory'}`                                                                         |
-| false   | `{success: false, message: 'Something is wrong'}` . Its mean something is wrong in your project                                  |
-| success | `{success: true, message: 'successfully inserted into destination}/file_name.csv, data: data.....}` . Here data is csv file data |  |
-
-<b> data:</b>
-
-```csv
+``` javascript
+// test.csv
+`
 "name","age","phone","test"
 "Y",534534,1835434,true
 "X",534534,5435355,true
+`
 
+csv_file_to_json_generate({
+    csv_path: 'test/test.csv',
+    destination: '',
+    json_file_name: 'test'
+})
 ```
+
+1. remote file to json:
+
+| parameter      | Description                                                                |
+| -------------- | -------------------------------------------------------------------------- |
+| url            | pass csv url                                                               |
+| destination    | Default `root folder`. You can pass destination like `json/test` or `json` |
+| json_file_name | file name of json file. Default file name `test`                           |
 
 ``` javascript
 
-const json = [
-    {
-        name: 'Y',
-        age: 534534,
-        phone: 1835434,
-        test: true,
-    },
-    {
-        name: 'X',
-        age: 534534,
-        phone: 5435355,
-        test: true,
-    }
-]
-const test = json_to_csv({ json: json, destination: 'test', file_name: 'test' })
+
+csv_to_json_generate_remotely({
+    url: 'https://www.w3schools.com/python/pandas/data.csv.txt'
+    ,
+    destination: '',
+    json_file_name: 'test'
+})
 
 ```

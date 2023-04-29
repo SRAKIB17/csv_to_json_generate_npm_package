@@ -1,65 +1,143 @@
 
-import { close, mkdir, openSync, readFile, readFileSync, write } from 'fs'
+import http, { get as httpGet } from 'http'
+import https, { get as httpsGet } from 'https'
+import { createWriteStream, fstatSync, openSync, readFile, readFileSync, writeFile, close } from 'fs'
 
-type JSONValue =
-    | string
-    | number
-    | boolean
-    | JSONObject
-    | JSONArray;
-
-interface JSONObject {
-    [x: string]: JSONValue;
-}
-
-interface JSONArray extends Array<JSONValue> { }
-
-function json_to_csv({ json, destination = '', file_name = 'test' }: { json: JSONArray, destination: string, file_name: string }) {
-    try {
-        let csvData = JSON.stringify(Object.keys(json?.[0]))?.slice(1, -1) + `
-`
-        for (const x of json) {
-            csvData += JSON.stringify(Object.values(x))?.slice(1, -1) + `
-`
+const csv_file_to_json_generate = ({ csv_path, json_file_name = 'test', destination }: { csv_path: string, json_file_name: string, destination: string }) => {
+    readFile(csv_path, function (err, data) {
+        if (err) {
+            return { success: false, message: 'Something is wrong' }
         }
+        else {
+            const convertStr = data.toString()?.split('\n')
+            const column = convertStr?.[0]?.split(',')
+            const arr = Array()
+            for (const x of convertStr.slice(1)) {
+                const obj = Object()
+                const rowData = x?.split(',')
+                if (rowData.length == column?.length) {
+                    column?.forEach((c, index) => {
+                        const columnReplace = (c?.[0] == '"' && c?.[c.length - 1] == '"') ? c?.slice(1, -1) : c
 
-        const path = (Boolean(destination) ? (destination + '/') : "") + file_name + ".csv"
-        const csvFile = openSync(path, 'w+')
-        write(csvFile, csvData, function (err, result) {
-            if (err) {
-                return {
-                    success: false, message: 'something is wrong'
-                }
-            }
-            else {
-                readFile(path, function (err, data) {
-                    if (err) {
-                        return {
-                            success: false, message: 'something is wrong'
+                        const rowDataReplace = rowData?.[index]
+                        if (rowDataReplace?.[0] == '"' && rowDataReplace?.[rowDataReplace.length - 1] == '"') {
+                            obj[columnReplace] = rowDataReplace?.slice(1, -1)
                         }
-                    }
+                        else {
+                            obj[columnReplace] = rowDataReplace
+                        }
+
+                    })
+                    arr.push(obj)
+                }
+                console.log(arr)
+            }
+            const path = (Boolean(destination) ? (destination + '/') : "") + json_file_name + ".json"
+            const jsonFile = openSync(path, 'w+');
+            writeFile(jsonFile, JSON.stringify(arr), { flag: 'w+' }, function (data) {
+                close(jsonFile, (err) => {
+                    if (err)
+                        console.error("Failed to close file", err);
                     else {
-                        console.log({
-                            success: true, message: `successfully inserted into ${destination}/${file_name}.csv`,
-                            data: data.toString()
-                        })
-                        return {
-                            success: true, message: `successfully inserted into ${destination}/${file_name}.csv`,
-                            data: data.toString()
+                        console.log("File Closed successfully");
+
+                        try {
+                        }
+                        catch (err) {
+                            console.error("Cannot find stats of file", err);
                         }
                     }
                 });
-            }
-        })
-        // close(f)
+            })
+
+        }
+    });
+    // return ()
+}
+
+
+
+const csv_to_json_generate_remotely = ({ url, json_file_name = 'test', destination }: { url: string, json_file_name: string, destination: string }) => {
+    if (url.includes('https')) {
+        httpsGet(url, response => {
+
+            response.on('data', function (chunk) {
+                const convertStr = chunk.toString()?.split('\n')
+                console.log(convertStr)
+                const column = convertStr?.[0]?.split(',')
+                const arr = Array()
+
+                for (const x of convertStr.slice(1)) {
+                    const obj = Object()
+                    const rowData = x?.split(',')
+                    if (rowData.length == column?.length) {
+                        column?.forEach((c: any, index: number) => {
+                            obj[c] = rowData?.[index]
+                        })
+                        arr.push(obj)
+                    }
+                }
+                const path = (Boolean(destination) ? (destination + '/') : "") + json_file_name + ".json"
+                const jsonFile = openSync(path, 'w+');
+                writeFile(jsonFile, JSON.stringify(arr), { flag: 'w+' }, function (data) {
+                    close(jsonFile, (err) => {
+                        if (err)
+                            console.error("Failed to close file", err);
+                        else {
+                            console.log("File Closed successfully");
+
+                            try {
+                            }
+                            catch (err) {
+                                console.error("Cannot find stats of file", err);
+                            }
+                        }
+                    });
+                })
+
+            })
+        });
     }
-    catch (err) {
-        if (err.errno == -4058) {
-            return { success: false, message: 'no such file or directory' }
-        }
-        return {
-            success: false, message: 'something is wrong'
-        }
+    else {
+        httpGet(url, response => {
+
+            response.on('data', function (chunk) {
+                const convertStr = chunk.toString()?.split('\n')
+                console.log(convertStr)
+                const column = convertStr?.[0]?.split(',')
+                const arr = Array()
+
+                for (const x of convertStr.slice(1)) {
+                    const obj = Object()
+                    const rowData = x?.split(',')
+                    if (rowData.length == column?.length) {
+                        column?.forEach((c: any, index: number) => {
+                            obj[c] = rowData?.[index]
+                        })
+                        arr.push(obj)
+                    }
+                }
+                const path = (Boolean(destination) ? (destination + '/') : "") + json_file_name + ".json"
+                const jsonFile = openSync(path, 'w+');
+                writeFile(jsonFile, JSON.stringify(arr), { flag: 'w+' }, function (data) {
+                    close(jsonFile, (err) => {
+                        if (err)
+                            console.error("Failed to close file", err);
+                        else {
+                            console.log("File Closed successfully");
+
+                            try {
+                            }
+                            catch (err) {
+                                console.error("Cannot find stats of file", err);
+                            }
+                        }
+                    });
+                })
+
+            })
+        });
     }
 }
-export default json_to_csv
+
+export { csv_file_to_json_generate, csv_to_json_generate_remotely }
